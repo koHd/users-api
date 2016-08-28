@@ -37,6 +37,28 @@ router.get('/:id', function(req, res) {
   });
 });
 
+// PUT /users/:id
+// Update a user by ID
+router.put('/:id', function(req, res) {
+  User.findByIdAndUpdate(
+    req.params.id,
+    {$set:
+      req.body
+    }, {new: true}, function(err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+
+    if (!user) {
+      return res.status(404).end();
+    }
+
+    res.json(user);
+  });
+});
+
 // DELETE /users/:id
 // Delete a user by ID
 router.delete('/:id', function(req, res) {
