@@ -3,6 +3,20 @@ var express = require('express');
 var router = express.Router();
 
 
+// POST /users/:id
+// Creat a user
+router.post('/', function(req, res) {
+  User.create(req.body, function (err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error creating user: " + err
+      });
+    }
+
+    res.json(user);
+  });
+});
+
 // GET /users
 // Get a list of users
 router.get('/', function(req, res) {
