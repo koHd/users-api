@@ -93,4 +93,31 @@ router.delete('/:id', function(req, res) {
   });
 });
 
+// POST /users/login/
+// Try to log in a user
+router.post('/login/', function(req, res) {
+  User.findOne({
+    username: req.body.username
+  }, function(err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+
+    if (!user) {
+      return res.status(404).end();
+    }
+
+    if (req.body.password === user.sha1) {
+      res.json(user);
+    } else {
+      return res.status(500).json({
+        error: "Username and password not correct"
+      });
+    }
+
+  })
+})
+
 module.exports = router;
