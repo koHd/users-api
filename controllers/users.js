@@ -1,5 +1,6 @@
 var User = require('../models/user');
 var express = require('express');
+const crypto = require('crypto');
 var router = express.Router();
 
 
@@ -109,7 +110,12 @@ router.post('/login/', function(req, res) {
       return res.status(404).end();
     }
 
-    if (req.body.password === user.sha1) {
+    const hash = crypto.createHash('sha1');
+    // using sha1 as the sha256 held in database for all users is wrong
+    hash.update(req.body.password+user.salt);
+
+
+    if (hash.digest('hex') === user.sha1) {
       res.json(user);
     } else {
       return res.status(500).json({
