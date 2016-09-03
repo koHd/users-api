@@ -114,8 +114,13 @@ router.post('/login/', function(req, res) {
     // using sha1 as the sha256 held in database for all users is wrong
     hash.update(req.body.password+user.salt);
 
-
     if (hash.digest('hex') === user.sha1) {
+      // before sending user data to caller, remove sensitive info
+      user.password = undefined;
+      user.salt = undefined;
+      user.md5 = undefined;
+      user.sha1 = undefined;
+      user.sha256 = undefined;
       res.json(user);
     } else {
       return res.status(500).json({
