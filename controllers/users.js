@@ -1,10 +1,11 @@
 var User = require('../models/user');
 var express = require('express');
+const crypto = require('crypto');
 var router = express.Router();
 
 
 // POST /users/:id
-// Creat a user
+// Create a user
 router.post('/', function(req, res) {
   User.create(req.body, function (err, user) {
     if (err) {
@@ -92,5 +93,39 @@ router.delete('/:id', function(req, res) {
     res.send('User ' + req.params.id + ' deleted');
   });
 });
+
+// POST /users/login/
+// Try to log in a user
+router.post('/login/', function(req, res) {
+  User.findOne({
+    username: req.body.username
+  }, function(err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        error: "No user matches the username"
+      });
+    }
+
+    const hash = crypto.createHash('sha1');
+    // using sha1 as the sha256 held in database for all users is wrong
+    hash.update(req.body.password+user.salt);
+
+
+    if (hash.digest('hex') === user.sha1) {
+      res.json(user);
+    } else {
+      return res.status(401).json({
+        error: "Incorrect password"
+      });
+    }
+
+  })
+})
 
 module.exports = router;

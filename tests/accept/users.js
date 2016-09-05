@@ -58,4 +58,62 @@ describe('Users', function() {
       });
     });
   });
+
+  describe('/POST users/login', function() {
+    it('should return a single user that logged in successfully', function(done) {
+      // Find a user in the DB
+      User.findOne({}, function(err, user) {
+
+        // Log this user in with username and password
+        chai.request(url)
+          .post('/users/login/')
+          .set('Content-Type', 'applicaiton/x-www-form-urlencoded')
+          .type('form')
+          .send('username='+user.username)
+          .send('password='+user.password)
+          .end(function(err, res) {
+            res.should.have.status(200);
+            expect(res.body).to.be.a('object');
+            expect(res.body.username).to.be.a('string');
+            expect(res.body.username).eql(user.username);
+            done();
+          });
+      });
+    });
+    it('should fail to find an unknown user', function(done) {
+      chai.request(url)
+        .post('/users/login')
+        .set('Content-Type', 'application/x-www.form-urlencoded')
+        .type('form')
+        .send('username=freddyKrueger')
+        .send('password=nightmare')
+        .end(function(err, res) {
+          res.should.have.status(404);
+          expect(res.body).to.be.a('object');
+          expect(res.body.error).to.be.a('string');
+          expect(res.body.error).eql("No user matches the username");
+          done();
+        });
+    });
+    it('should fail to login with wrong password', function(done) {
+      // Find a user in the DB
+      User.findOne({}, function(err, user) {
+
+        // Log this user in with username and password
+        chai.request(url)
+          .post('/users/login/')
+          .set('Content-Type', 'applicaiton/x-www-form-urlencoded')
+          .type('form')
+          .send('username='+user.username)
+          .send('password=madeuponthespot123')
+          .end(function(err, res) {
+            res.should.have.status(401);
+            expect(res.body).to.be.a('object');
+            expect(res.body.error).to.be.a('string');
+            expect(res.body.error).eql("Incorrect password");
+            done();
+          });
+      });
+    });
+  });
 });
