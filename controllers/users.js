@@ -120,7 +120,7 @@ router.post('/login/', function(req, res) {
     if (hash.digest('hex') === user.sha1) {
       res.json(user);
     } else {
-      return res.status(500).json({
+      return res.status(401).json({
         error: "Incorrect password"
       });
     }
