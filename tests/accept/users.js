@@ -58,4 +58,26 @@ describe('Users', function() {
       });
     });
   });
+
+  describe('/POST users/login', function() {
+    it('should return a single user that logged in successfully', function(done) {
+      // Find a user in the DB
+      User.findOne({}, function(err, user) {
+
+        // Log this user in with username and password
+        chai.request(url)
+          .post('/users/login/')
+          .set('Content-Type', 'applicaiton/x-www-form-urlencoded')
+          .type('form')
+          .send('username='+user.username)
+          .send('password='+user.password)
+          .end(function(err, res) {
+            res.should.have.status(200);
+            expect(res.body).to.be.a('object');
+            expect(res.body.username).to.be.a('string');
+            done();
+          });
+      });
+    });
+  });
 });

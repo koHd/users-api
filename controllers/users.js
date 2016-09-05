@@ -5,7 +5,7 @@ var router = express.Router();
 
 
 // POST /users/:id
-// Creat a user
+// Create a user
 router.post('/', function(req, res) {
   User.create(req.body, function (err, user) {
     if (err) {
@@ -107,7 +107,9 @@ router.post('/login/', function(req, res) {
     }
 
     if (!user) {
-      return res.status(404).end();
+      return res.status(404).json({
+        error: "No user matches the username"
+      });
     }
 
     const hash = crypto.createHash('sha1');
@@ -119,7 +121,7 @@ router.post('/login/', function(req, res) {
       res.json(user);
     } else {
       return res.status(500).json({
-        error: "Username and password not correct"
+        error: "Incorrect password"
       });
     }
 
