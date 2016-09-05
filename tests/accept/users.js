@@ -91,6 +91,7 @@ describe('Users', function() {
           res.should.have.status(404);
           expect(res.body).to.be.a('object');
           expect(res.body.error).to.be.a('string');
+          expect(res.body.error).eql("No user matches the username");
           done();
         });
     });
@@ -109,6 +110,7 @@ describe('Users', function() {
             res.should.have.status(401);
             expect(res.body).to.be.a('object');
             expect(res.body.error).to.be.a('string');
+            expect(res.body.error).eql("Incorrect password");
             done();
           });
       });
